@@ -6,10 +6,10 @@ from datetime import datetime
 def calculate_probability(rating1, rating2):
     return 1 / (1 + 10**((rating2 - rating1) / 400))
 
-def update_ratings(rating1, rating2, k_factor, result):
+def update_ratings(rating1, rating2, k_factor, k_factor_loser, result):
     p = calculate_probability(rating1, rating2)
     rating1_new = rating1 + k_factor * (result - p)
-    rating2_new = rating2 + k_factor * ((1 - result) - (1 - p))
+    rating2_new = rating2 + k_factor_loser * ((1 - result) - (1 - p))
     return rating1_new, rating2_new
 
 def plot_elo_history_by_team(elo_history, team):
@@ -30,6 +30,15 @@ def extract_year_from_date(date):
 def extract_match_info(json_data):
     event_info = json_data['info']['event']
     stage = event_info.get('stage', None)
+    
+    # check if one team is Delhi Daredevils and change the name to Delhi Capitals
+    if json_data['info']['teams'][0] == 'Delhi Daredevils':
+        json_data['info']['teams'][0] = 'Delhi Capitals'
+    if json_data['info']['teams'][1] == 'Delhi Daredevils':
+        json_data['info']['teams'][1] = 'Delhi Capitals'
+    if json_data['info']['outcome'].get('winner', None) == 'Delhi Daredevils':
+        json_data['info']['outcome']['winner'] = 'Delhi Capitals'
+
     match_info = (
         json_data['info']['teams'][0],
         json_data['info']['teams'][1],
@@ -67,13 +76,13 @@ if __name__ == "__main__":
     elo_history = {team: [] for team in team_elo_ratings.keys()}
     peak_elo_ratings = {team: 1400 for team in team_elo_ratings.keys()}  # Initialize with default peak rating
     k_factor_regular = 16  # Initial K-factor for regular matches
-    k_factor_knockout = k_factor_regular * 2  # Adjusted K-factor for knockout matches
+    k_factor_knockout = k_factor_regular * 3  # Adjusted K-factor for knockout matches
 
     for record in all_match_records:
         match_index, team1, team2, date, winner, stage = record
     
-        team_elo_ratings.setdefault(team1, 1400 if team1 == 'Gujarat Titans' or team1 == 'Lucknow Super Giants' else 1400)
-        team_elo_ratings.setdefault(team2, 1400 if team2 == 'Gujarat Titans' or team2 == 'Lucknow Super Giants' else 1400)
+        team_elo_ratings.setdefault(team1, 1400)
+        team_elo_ratings.setdefault(team2, 1400)
     
         if team1 not in elo_history:
             elo_history[team1] = []
@@ -86,10 +95,10 @@ if __name__ == "__main__":
             loser_elo = team_elo_ratings[loser]
     
             k_factor_winner = k_factor_knockout if stage.lower() in ['qualifier 1', 'eliminator', 'qualifier 2', 'final'] else k_factor_regular
-            k_factor_loser = k_factor_knockout if stage.lower() in ['qualifier 1', 'eliminator', 'qualifier 2', 'final'] else k_factor_regular
+            k_factor_loser = k_factor_regular if stage.lower() in ['qualifier 1', 'eliminator', 'qualifier 2', 'final'] else k_factor_regular
     
             team_elo_ratings[winner], team_elo_ratings[loser] = update_ratings(
-                winner_elo, loser_elo, k_factor_winner, 1
+                winner_elo, loser_elo, k_factor_winner, k_factor_loser, 1
             )
     
             # Update elo_history for each team
@@ -98,16 +107,32 @@ if __name__ == "__main__":
             elo_history[team2].append((year, team_elo_ratings[team2]))
     
             # Update peak_elo_ratings for each team
-            if team1 in peak_elo_ratings:
-                peak_elo_ratings[team1] = max(peak_elo_ratings[team1], team_elo_ratings[team1])
-                print(f"Updated peak_elo_ratings for {team1}: {peak_elo_ratings[team1]}")
-            if team2 in peak_elo_ratings:
-                peak_elo_ratings[team2] = max(peak_elo_ratings[team2], team_elo_ratings[team2])
-                print(f"Updated peak_elo_ratings for {team2}: {peak_elo_ratings[team2]}")
+            try:
+                if team1 in team_elo_ratings:
+                    peak_elo_ratings[team1] = max(peak_elo_ratings[team1], team_elo_ratings[team1])
+                    print(f"Updated peak_elo_ratings for {team1}: {peak_elo_ratings[team1]}")
+                else:
+                    team_elo_ratings[team1] = 1400
+                    print(f"Added {team1} to team_elo_ratings with default rating 1400")
+            except KeyError:
+                team_elo_ratings[team1] = 1400
+                peak_elo_ratings[team1] = 1400
+            
+            try:
+                if team2 in team_elo_ratings:
+                    peak_elo_ratings[team2] = max(peak_elo_ratings[team2], team_elo_ratings[team2])
+                    print(f"Updated peak_elo_ratings for {team2}: {peak_elo_ratings[team2]}")
+                else:
+                    team_elo_ratings[team2] = 1400
+                    print(f"Added {team2} to team_elo_ratings with default rating 1400")
+            except KeyError:
+                team_elo_ratings[team2] = 1400
+                peak_elo_ratings[team2] = 1400
+
 
     # Print Peak Elo ratings for each team
     print("\nPeak Elo Ratings:")
-    for team, peak_elo in peak_elo_ratings.items():
+    for team, peak_elo in sorted(peak_elo_ratings.items(), key=lambda x: x[1], reverse=True):
         print(f"{team}: {peak_elo:.2f}")
 
     # Print Elo ratings for each team after every year
@@ -119,9 +144,19 @@ if __name__ == "__main__":
             if ratings_for_year:
                 print(f"{team}: {ratings_for_year[-1]:.2f}")
 
+    print(team_elo_ratings)
+
+    # Get Peak Elo for each Team
+
+    for team in elo_history:
+        peak_elo = max(elo for date, elo in elo_history[team])
+        # date of peak elo
+        peak_elo_date = [date for date, elo in elo_history[team] if elo == peak_elo][0]
+        print(f"{team}: {peak_elo:.2f}, {peak_elo_date}")
+
     # Plot Elo ratings over time for each team
-    team_to_check = 'Mumbai Indians'
-    if team_to_check in elo_history:
-        plot_elo_history_by_team(elo_history, team_to_check)
-    else:
-        print(f"No data available for {team_to_check}")
+    #team_to_check = 'Mumbai Indians'
+    #if team_to_check in elo_history:
+    #    plot_elo_history_by_team(elo_history, team_to_check)
+    #else:
+    #    print(f"No data available for {team_to_check}")
