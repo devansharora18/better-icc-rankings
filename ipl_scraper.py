@@ -12,11 +12,17 @@ def update_ratings(rating1, rating2, k_factor, k_factor_loser, result):
     rating2_new = rating2 + k_factor_loser * ((1 - result) - (1 - p))
     return rating1_new, rating2_new
 
-def plot_elo_history_by_team(elo_history, team):
-    plt.figure(figsize=(8, 4))
-    years, elo_values = zip(*elo_history[team])  # Unzip the years and elo_values
-    plt.plot(years, elo_values, label=team, marker='o', linestyle='-')
-    plt.title(f'Elo Ratings Over Time for {team}')
+def plot_elo_history(elo_history, team):
+    plt.figure(figsize=(14, 6))
+    match_data = elo_history[team]
+
+    years, elo_values = zip(*match_data)
+    
+    for i, year in enumerate(years):
+        plt.scatter([i] * len(elo_values[i]), elo_values[i], label=f'{team} - {year}', marker='o', alpha=0.7)
+
+    plt.xticks(range(len(years)), [str(year) for year in years])
+    plt.title(f'Elo Ratings Over Matches for {team}')
     plt.xlabel('Year')
     plt.ylabel('Elo Rating')
     plt.legend()
@@ -29,22 +35,44 @@ def extract_year_from_date(date):
 
 def extract_match_info(json_data):
     event_info = json_data['info']['event']
-    stage = event_info.get('stage', None)
+    stage = event_info.get('stage', 'Unknown')
+    team1 = json_data['info']['teams'][0]
+    team2 = json_data['info']['teams'][1]
+
+    # Replace 'Delhi Daredevils' with 'Delhi Capitals'
+    if team1 == 'Delhi Daredevils':
+        team1 = 'Delhi Capitals'
+
+    if team2 == 'Delhi Daredevils':
+        team2 = 'Delhi Capitals'
+
+    winner = json_data['info']['outcome'].get('winner', None)
+    if winner == 'Delhi Daredevils':
+        winner = 'Delhi Capitals'
+
+    # Replace Kings XI Punjab with Punjab Kings
+    if team1 == 'Kings XI Punjab':
+        team1 = 'Punjab Kings'
+    if team2 == 'Kings XI Punjab':
+        team2 = 'Punjab Kings'
     
-    # check if one team is Delhi Daredevils and change the name to Delhi Capitals
-    if json_data['info']['teams'][0] == 'Delhi Daredevils':
-        json_data['info']['teams'][0] = 'Delhi Capitals'
-    if json_data['info']['teams'][1] == 'Delhi Daredevils':
-        json_data['info']['teams'][1] = 'Delhi Capitals'
-    if json_data['info']['outcome'].get('winner', None) == 'Delhi Daredevils':
-        json_data['info']['outcome']['winner'] = 'Delhi Capitals'
+    if winner == 'Kings XI Punjab':
+        winner = 'Punjab Kings'
+
+    # Replace Rising Pune Supergiants with Rising Pune Supergiant
+    if team1 == 'Rising Pune Supergiants':
+        team1 = 'Rising Pune Supergiant'
+    if team2 == 'Rising Pune Supergiants':
+        team2 = 'Rising Pune Supergiant'
+    if winner == 'Rising Pune Supergiants':
+        winner = 'Rising Pune Supergiant'
 
     match_info = (
-        json_data['info']['teams'][0],
-        json_data['info']['teams'][1],
-        json_data['info']['dates'][0],  # Assuming the date is present in the 'dates' list
-        json_data['info']['outcome'].get('winner', None),
-        stage if stage else "Unknown"
+        team1,
+        team2,
+        json_data['info']['dates'][0],
+        winner,
+        stage
     )
     return match_info
 
@@ -54,88 +82,87 @@ def scrape_match_records(folder_path):
     for filename in os.listdir(folder_path):
         if filename.endswith(".json"):
             file_path = os.path.join(folder_path, filename)
-            
+
             with open(file_path, 'r') as file:
                 match_data = json.load(file)
                 match_info = extract_match_info(match_data)
                 match_records.append(match_info)
 
-    # Sort the match records by date
-    sorted_records = sorted(match_records, key=lambda x: x[2])
-
-    # Number the matches based on the sorted order
+    sorted_records = sorted(match_records, key=lambda x: extract_year_from_date(x[2]))
     numbered_records = [(index + 1,) + record[0:] for index, record in enumerate(sorted_records)]
 
     return numbered_records
 
+
+
 if __name__ == "__main__":
-    folder_path = "ipl_json/"  # Replace with the actual path to your folder
+    folder_path = "ipl_json/"
     all_match_records = scrape_match_records(folder_path)
 
-    team_elo_ratings = {}  # Dictionary to store Elo ratings for each team
-    elo_history = {team: [] for team in team_elo_ratings.keys()}
-    peak_elo_ratings = {team: 1400 for team in team_elo_ratings.keys()}  # Initialize with default peak rating
-    k_factor_regular = 16  # Initial K-factor for regular matches
-    k_factor_knockout = k_factor_regular * 3  # Adjusted K-factor for knockout matches
+    team_elo_ratings = {team: 1600 for team in set(record[1] for record in all_match_records)}
+    elo_history = {team: [] for team in team_elo_ratings}
+    peak_elo_ratings = {team: 1600 for team in team_elo_ratings}
+    k_factor_regular = 32
+    k_factor_playoffs = k_factor_regular * 2
+    k_factor_finals = k_factor_regular * 4
+
+    db = {
+        "Chennai Super Kings": [],
+        "Delhi Capitals": [],
+        "Kolkata Knight Riders": [],
+        "Mumbai Indians": [],
+        "Punjab Kings": [],
+        "Rajasthan Royals": [],
+        "Royal Challengers Bangalore": [],
+        "Sunrisers Hyderabad": [],
+        "Deccan Chargers": [],
+        "Gujarat Lions": [],
+        "Kochi Tuskers Kerala": [],
+        "Pune Warriors": [],
+        "Rising Pune Supergiant": [],
+        "Gujarat Titans": [],
+        "Lucknow Super Giants": [],
+    }
 
     for record in all_match_records:
         match_index, team1, team2, date, winner, stage = record
-    
-        team_elo_ratings.setdefault(team1, 1400)
-        team_elo_ratings.setdefault(team2, 1400)
-    
-        if team1 not in elo_history:
-            elo_history[team1] = []
-        if team2 not in elo_history:
-            elo_history[team2] = []
-    
-        if winner is not None:
+
+        team_elo_ratings.setdefault(team1, 1600)
+        team_elo_ratings.setdefault(team2, 1600)
+
+        if winner:
             winner_elo = team_elo_ratings[team1] if winner == team1 else team_elo_ratings[team2]
             loser = team2 if winner == team1 else team1
             loser_elo = team_elo_ratings[loser]
-    
-            k_factor_winner = k_factor_knockout if stage.lower() in ['qualifier 1', 'eliminator', 'qualifier 2', 'final'] else k_factor_regular
-            k_factor_loser = k_factor_regular if stage.lower() in ['qualifier 1', 'eliminator', 'qualifier 2', 'final'] else k_factor_regular
-    
+
+            print(stage)
+
+            k_factor_winner = k_factor_regular
+
+            if stage == 'Final':
+                k_factor_winner = k_factor_finals
+            
+            elif stage == 'Qualifier 1' or stage == 'Qualifier 2' or stage == 'Eliminator':
+                k_factor_winner = k_factor_playoffs
+                
+            k_factor_loser = k_factor_regular
+
             team_elo_ratings[winner], team_elo_ratings[loser] = update_ratings(
                 winner_elo, loser_elo, k_factor_winner, k_factor_loser, 1
             )
-    
-            # Update elo_history for each team
+
             year = extract_year_from_date(date)
             elo_history[team1].append((year, team_elo_ratings[team1]))
             elo_history[team2].append((year, team_elo_ratings[team2]))
-    
-            # Update peak_elo_ratings for each team
-            try:
-                if team1 in team_elo_ratings:
-                    peak_elo_ratings[team1] = max(peak_elo_ratings[team1], team_elo_ratings[team1])
-                    print(f"Updated peak_elo_ratings for {team1}: {peak_elo_ratings[team1]}")
-                else:
-                    team_elo_ratings[team1] = 1400
-                    print(f"Added {team1} to team_elo_ratings with default rating 1400")
-            except KeyError:
-                team_elo_ratings[team1] = 1400
-                peak_elo_ratings[team1] = 1400
-            
-            try:
-                if team2 in team_elo_ratings:
-                    peak_elo_ratings[team2] = max(peak_elo_ratings[team2], team_elo_ratings[team2])
-                    print(f"Updated peak_elo_ratings for {team2}: {peak_elo_ratings[team2]}")
-                else:
-                    team_elo_ratings[team2] = 1400
-                    print(f"Added {team2} to team_elo_ratings with default rating 1400")
-            except KeyError:
-                team_elo_ratings[team2] = 1400
-                peak_elo_ratings[team2] = 1400
+
+            team1db = [date, team_elo_ratings[team1]]
+            team2db = [date, team_elo_ratings[team2]]
+
+            db[team1].append(team1db)
+            db[team2].append(team2db)
 
 
-    # Print Peak Elo ratings for each team
-    print("\nPeak Elo Ratings:")
-    for team, peak_elo in sorted(peak_elo_ratings.items(), key=lambda x: x[1], reverse=True):
-        print(f"{team}: {peak_elo:.2f}")
 
-    # Print Elo ratings for each team after every year
     print("\nTeam Elo Ratings After Each Year:")
     for year in sorted(set(year for team_history in elo_history.values() for year, _ in team_history)):
         print(f"\nYear {year}:")
@@ -144,19 +171,43 @@ if __name__ == "__main__":
             if ratings_for_year:
                 print(f"{team}: {ratings_for_year[-1]:.2f}")
 
-    print(team_elo_ratings)
-
-    # Get Peak Elo for each Team
-
+    #print("\nPeak Elo Ratings for Each Team:")
+    peak = []
     for team in elo_history:
-        peak_elo = max(elo for date, elo in elo_history[team])
-        # date of peak elo
-        peak_elo_date = [date for date, elo in elo_history[team] if elo == peak_elo][0]
-        print(f"{team}: {peak_elo:.2f}, {peak_elo_date}")
+        peak_elo, peak_elo_date = max((elo, date) for date, elo in elo_history[team])
+        res = team, peak_elo, peak_elo_date
+        peak.append(res)
+    # Sort the teams by their peak Elo rating
+        
+    print("\nPeak Elo Ratings for Each Team:")
+    peak.sort(key=lambda x: x[1], reverse=True)
+    for team, peak_elo, peak_elo_date in peak:
+        print(f"{team}: {peak_elo:.2f} in {peak_elo_date}")
 
-    # Plot Elo ratings over time for each team
-    #team_to_check = 'Mumbai Indians'
+    #team_to_check = 'Royal Challengers Bangalore'
     #if team_to_check in elo_history:
-    #    plot_elo_history_by_team(elo_history, team_to_check)
+    #    plot_elo_history(elo_history, team_to_check)
     #else:
     #    print(f"No data available for {team_to_check}")
+        
+    elo_data = db['Royal Challengers Bangalore']
+
+    matches_by_year = {}
+
+    # Iterate through elo_data and organize matches by year
+    for date, elo in elo_data:
+        year = date.split('-')[0]
+        if year not in matches_by_year:
+            matches_by_year[year] = []
+    
+        matches_by_year[year].append({'date': date, 'elo': elo})
+    
+    # Sort matches within each year by date
+    for year, matches in matches_by_year.items():
+        matches_by_year[year] = sorted(matches, key=lambda x: x['date'])
+    
+    # Print the organized data
+    for year, matches in matches_by_year.items():
+        print(f"\nYear {year}:")
+        for index, match in enumerate(matches, start=1):
+            print(f"Match {index}: Date {match['date']}, Elo {match['elo']:.2f}")
