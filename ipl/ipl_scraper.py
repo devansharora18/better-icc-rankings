@@ -27,7 +27,7 @@ def plot_elo_history(elo_history, team):
     plt.ylabel('Elo Rating')
     plt.legend()
     plt.grid(True)
-    plt.tight_layout()
+    #plt.tight_layout()
     plt.show()
 
 def extract_year_from_date(date):
@@ -103,8 +103,8 @@ if __name__ == "__main__":
     elo_history = {team: [] for team in team_elo_ratings}
     peak_elo_ratings = {team: 1600 for team in team_elo_ratings}
     k_factor_regular = 32
-    k_factor_playoffs = k_factor_regular * 2
-    k_factor_finals = k_factor_regular * 4
+    k_factor_playoffs = k_factor_regular * 1.5
+    k_factor_finals = k_factor_regular * 2
 
     db = {
         "Chennai Super Kings": [],
@@ -138,14 +138,17 @@ if __name__ == "__main__":
             print(stage)
 
             k_factor_winner = k_factor_regular
+            k_factor_loser = k_factor_regular
 
             if stage == 'Final':
                 k_factor_winner = k_factor_finals
+                k_factor_loser = k_factor_playoffs
             
             elif stage == 'Qualifier 1' or stage == 'Qualifier 2' or stage == 'Eliminator':
                 k_factor_winner = k_factor_playoffs
+                k_factor_loser = k_factor_playoffs
                 
-            k_factor_loser = k_factor_regular
+            
 
             team_elo_ratings[winner], team_elo_ratings[loser] = update_ratings(
                 winner_elo, loser_elo, k_factor_winner, k_factor_loser, 1
