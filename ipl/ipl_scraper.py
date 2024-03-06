@@ -93,11 +93,23 @@ def scrape_match_records(folder_path):
 
     return numbered_records
 
-
-
-if __name__ == "__main__":
+def scrape_to_file():
     folder_path = "ipl_json/"
     all_match_records = scrape_match_records(folder_path)
+    with open('matches.txt', 'a') as file:
+        for record in all_match_records:
+            file.write(f"{record}\n")
+
+def main():
+    #scrape_to_file()
+    
+    all_match_records = []
+    
+    with open('matches.txt', 'r') as file:
+        for line in file:
+            match_record = eval(line)
+            all_match_records.append(match_record)
+
 
     team_elo_ratings = {team: 1600 for team in set(record[1] for record in all_match_records)}
     elo_history = {team: [] for team in team_elo_ratings}
@@ -214,3 +226,6 @@ if __name__ == "__main__":
         print(f"\nYear {year}:")
         for index, match in enumerate(matches, start=1):
             print(f"Match {index}: Date {match['date']}, Elo {match['elo']:.2f}")
+
+if __name__ == "__main__":
+    main()
