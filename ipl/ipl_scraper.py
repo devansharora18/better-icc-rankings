@@ -1,6 +1,5 @@
 import os
 import json
-import matplotlib.pyplot as plt
 from datetime import datetime
 
 def calculate_probability(rating1, rating2):
@@ -11,24 +10,6 @@ def update_ratings(rating1, rating2, k_factor, k_factor_loser, result):
     rating1_new = rating1 + k_factor * (result - p)
     rating2_new = rating2 + k_factor_loser * ((1 - result) - (1 - p))
     return rating1_new, rating2_new
-
-def plot_elo_history(elo_history, team):
-    plt.figure(figsize=(14, 6))
-    match_data = elo_history[team]
-
-    years, elo_values = zip(*match_data)
-    
-    for i, year in enumerate(years):
-        plt.scatter([i] * len(elo_values[i]), elo_values[i], label=f'{team} - {year}', marker='o', alpha=0.7)
-
-    plt.xticks(range(len(years)), [str(year) for year in years])
-    plt.title(f'Elo Ratings Over Matches for {team}')
-    plt.xlabel('Year')
-    plt.ylabel('Elo Rating')
-    plt.legend()
-    plt.grid(True)
-    #plt.tight_layout()
-    plt.show()
 
 def extract_year_from_date(date):
     return datetime.strptime(date, "%Y-%m-%d").year
@@ -199,11 +180,6 @@ def main():
     for team, peak_elo, peak_elo_date in peak:
         print(f"{team}: {peak_elo:.2f} in {peak_elo_date}")
 
-    #team_to_check = 'Royal Challengers Bangalore'
-    #if team_to_check in elo_history:
-    #    plot_elo_history(elo_history, team_to_check)
-    #else:
-    #    print(f"No data available for {team_to_check}")
         
     elo_data = db['Royal Challengers Bangalore']
 
