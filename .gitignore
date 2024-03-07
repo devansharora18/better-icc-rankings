@@ -5,6 +5,7 @@ __pycache__/
 
 ipl/ipl_json/
 tests/tests_male_json/
+odi/odis_male_json/
 
 # C extensions
 *.so

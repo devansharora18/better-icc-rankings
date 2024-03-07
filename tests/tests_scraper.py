@@ -146,12 +146,12 @@ def main():
             k_factor_loser = k_factor_regular
 
             if away:
-                k_factor_winner = k_factor_regular * 1.5
-                k_factor_loser = k_factor_regular * 1.5
+                k_factor_winner = k_factor_winner * 1.5
+                k_factor_loser = k_factor_loser * 1.5
 
             if name == 'ICC World Test Championship':
-                k_factor_winner = k_factor_regular * 2
-                k_factor_loser = k_factor_regular * 2
+                k_factor_winner = k_factor_winner * 2
+                k_factor_loser = k_factor_loser * 2
                            
 
             team_elo_ratings[winner], team_elo_ratings[loser] = update_ratings(
@@ -173,10 +173,16 @@ def main():
     print("\nTeam Elo Ratings After Each Year:")
     for year in sorted(set(year for team_history in elo_history.values() for year, _ in team_history)):
         print(f"\nYear {year}:")
+        elos = {}
         for team, history in elo_history.items():
             ratings_for_year = [elo for elo_year, elo in history if elo_year <= year]
             if ratings_for_year:
-                print(f"{team}: {ratings_for_year[-1]:.2f}")
+                elos[team] = ratings_for_year[-1]
+            # sort elos by rating
+        elos.sort(key=lambda x: x[1], reverse=True)
+        for team, elo in elos:
+            print(f"{team}: {elo:.2f}")
+
 
     #print("\nPeak Elo Ratings for Each Team:")
     peak = []
