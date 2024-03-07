@@ -77,7 +77,7 @@ def scrape_match_records(folder_path):
 def scrape_to_file():
     folder_path = "ipl_json/"
     all_match_records = scrape_match_records(folder_path)
-    with open('matches.txt', 'a') as file:
+    with open('matches.txt', 'w') as file:
         for record in all_match_records:
             file.write(f"{record}\n")
 

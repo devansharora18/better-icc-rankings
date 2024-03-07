@@ -3,7 +3,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-ipl_json/
+ipl/ipl_json/
+tests/tests_male_json/
 
 # C extensions
 *.so
