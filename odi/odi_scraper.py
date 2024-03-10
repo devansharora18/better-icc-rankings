@@ -7,7 +7,7 @@ countries = set()
 
 country_city_mapping = {
     'United Arab Emirates': ['Abu Dhabi', 'Dubai'],
-    'Sri Lanka': ['Kolkata', 'Colombo', 'Kandy', 'Dambulla', 'Galle', 'Hambantota', 'Kathmandu'],
+    'Sri Lanka': ['Colombo', 'Kandy', 'Dambulla', 'Galle', 'Hambantota', 'Kathmandu'],
     'Papua New Guinea': ['Port Moresby'],
     'South Africa': ['Cape Town', 'Potchefstroom', 'St Kitts', 'Hamilton', 'Benoni', 'Johannesburg', 'Dharmasala', 'Durban', 'Bloemfontein', 'Port Elizabeth', 'Centurion', 'Gqeberha'],
     'Kenya': ['Nairobi'],
@@ -25,7 +25,7 @@ country_city_mapping = {
     'Scotland': ['Glasgow', 'Aberdeen', 'Edinburgh'],
     'Bermuda': [],
     'Ireland': ['Dublin'],
-    'India': ['Vadodara', 'Faridabad', 'Ahmedabad', 'Kolkata', 'Rajkot', 'Dharamsala', 'Kochi', 'Ranchi', 'Guwahati', 'Chandigarh', 'Lucknow', 'Indore', 'Delhi', 'Thiruvananthapuram', 'Jamshedpur', 'Visakhapatnam', 'Greater Noida', 'Cuttack', 'Mumbai', 'Pune', 'Guwahati', 'Jaipur'],
+    'India': ['Vadodara', 'Faridabad', 'Ahmedabad', 'Kolkata', 'Rajkot', 'Dharamsala', 'Kochi', 'Ranchi', 'Guwahati', 'Chandigarh', 'Lucknow', 'Indore', 'Delhi', 'Thiruvananthapuram', 'Jamshedpur', 'Visakhapatnam', 'Greater Noida', 'Cuttack', 'Mumbai', 'Pune', 'Guwahati', 'Jaipur', 'Kolkata'],
     'Australia': ['Perth', 'Adelaide', 'Brisbane', 'Sydney', 'Melbourne', 'Canberra', 'Hobart', 'Townsville', 'Cairns'],
     'Nepal': ['Kirtipur', 'Kathmandu'],
     'Namibia': ['Windhoek'],
@@ -124,9 +124,13 @@ def main():
     #print(countries)
 
 
-    team_elo_ratings = {team: 1600 for team in set(record[1] for record in all_match_records)}
+    test_playing_nations = ['Sri Lanka', 'Pakistan', 'England', 'Australia', 'India', 'West Indies', 'South Africa', 'Zimbabwe', 'New Zealand', 'Bangladesh', 'Ireland']
+
+    #default elo 1000 if not test playing nation, 1600 if test playing nation
+
+    team_elo_ratings = {team: 1600 if team in test_playing_nations else 1000 for team in countries}
     elo_history = {team: [] for team in team_elo_ratings}
-    peak_elo_ratings = {team: 1600 for team in team_elo_ratings}
+    peak_elo_ratings = {team: 1600 if team in test_playing_nations else 1000 for team in team_elo_ratings}
     k_factor_regular = 32
 
     db = {}
@@ -137,8 +141,6 @@ def main():
     for record in all_match_records:
         match_index, team1, team2, date, winner, away, name, stage = record
 
-        team_elo_ratings.setdefault(team1, 1600)
-        team_elo_ratings.setdefault(team2, 1600)
 
         if winner:
             winner_elo = team_elo_ratings[team1] if winner == team1 else team_elo_ratings[team2]
@@ -164,18 +166,18 @@ def main():
 
             if stage == 'Final':
                 k_factor_winner = k_factor_winner * 2
-                #k_factor_loser = k_factor_loser * 1.5
+                k_factor_loser = k_factor_loser * 1.5
 
             if stage == 'Semi Final':
                 k_factor_winner = k_factor_winner * 1.5
-                #k_factor_loser = k_factor_loser * 1.25
+                k_factor_loser = k_factor_loser * 1.25
             
             if stage == 'Quarter Final':
                 k_factor_winner = k_factor_winner * 1.5
-                #k_factor_loser = k_factor_loser * 1.25
+                k_factor_loser = k_factor_loser * 1.25
 
             team_elo_ratings[winner], team_elo_ratings[loser] = update_ratings(
-                winner_elo, loser_elo, 32, 32, 1
+                winner_elo, loser_elo, k_factor_winner, k_factor_loser, 1
             )
 
             year = extract_year_from_date(date)

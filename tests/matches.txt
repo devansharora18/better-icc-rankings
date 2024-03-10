@@ -798,3 +798,4 @@
 (798, 'England', 'India', '2024-02-23', 'India', False, 'England tour of India')
 (799, 'Afghanistan', 'Sri Lanka', '2024-02-02', 'Sri Lanka', False, 'Afghanistan tour of Sri Lanka')
 (800, 'Afghanistan', 'Ireland', '2024-02-28', 'Ireland', False, 'Afghanistan vs Ireland')
+(801, 'England', 'India', '2024-03-7', 'India', False, 'England tour of India')
