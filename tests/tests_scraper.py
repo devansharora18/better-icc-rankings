@@ -111,23 +111,10 @@ def main():
     peak_elo_ratings = {team: 1600 for team in team_elo_ratings}
     k_factor_regular = 32
 
-    #db = {
-    #    "Chennai Super Kings": [],
-    #    "Delhi Capitals": [],
-    #    "Kolkata Knight Riders": [],
-    #    "Mumbai Indians": [],
-    #    "Punjab Kings": [],
-    #    "Rajasthan Royals": [],
-    #    "Royal Challengers Bangalore": [],
-    #    "Sunrisers Hyderabad": [],
-    #    "Deccan Chargers": [],
-    #    "Gujarat Lions": [],
-    #    "Kochi Tuskers Kerala": [],
-    #    "Pune Warriors": [],
-    #    "Rising Pune Supergiant": [],
-    #    "Gujarat Titans": [],
-    #    "Lucknow Super Giants": [],
-    #}
+    db = {}
+
+    for country in countries:
+        db[country] = []
 
     for record in all_match_records:
         match_index, team1, team2, date, winner, away, name = record
@@ -151,7 +138,7 @@ def main():
 
             if name == 'ICC World Test Championship':
                 k_factor_winner = k_factor_winner * 2
-                k_factor_loser = k_factor_loser * 2
+                k_factor_loser = k_factor_loser * 1
                            
 
             team_elo_ratings[winner], team_elo_ratings[loser] = update_ratings(
@@ -165,23 +152,8 @@ def main():
             team1db = [date, team_elo_ratings[team1]]
             team2db = [date, team_elo_ratings[team2]]
 
-            #db[team1].append(team1db)
-            #db[team2].append(team2db)
-
-
-
-    print("\nTeam Elo Ratings After Each Year:")
-    for year in sorted(set(year for team_history in elo_history.values() for year, _ in team_history)):
-        print(f"\nYear {year}:")
-        elos = {}
-        for team, history in elo_history.items():
-            ratings_for_year = [elo for elo_year, elo in history if elo_year <= year]
-            if ratings_for_year:
-                elos[team] = ratings_for_year[-1]
-            # sort elos by rating
-        elos.sort(key=lambda x: x[1], reverse=True)
-        for team, elo in elos:
-            print(f"{team}: {elo:.2f}")
+            db[team1].append(team1db)
+            db[team2].append(team2db)
 
 
     #print("\nPeak Elo Ratings for Each Team:")
@@ -219,6 +191,50 @@ def main():
     #    print(f"\nYear {year}:")
     #    for index, match in enumerate(matches, start=1):
     #        print(f"Match {index}: Date {match['date']}, Elo {match['elo']:.2f}")
+        
+    print("\nElo at the end of each year:")
+    
+    for year in range(2002, 2025):
+        print(f"\nYear {year}:")
+        teams = countries
+
+        data = []
+
+        for team in teams:
+            elo_data = db[team]
+
+            n = 0
+
+            for i in range(len(elo_data)):
+                if elo_data[i][0].split('-')[0] == str(year):
+                    n += 1
+                    try:
+                        if elo_data[i+1][0].split('-')[0] != str(year):
+                            data.append((team, elo_data[i][1], elo_data[i][0]))
+                    except:
+                        data.append((team, elo_data[i][1], elo_data[i][0]))
+
+            #if n == 0:
+            #    data.append((team, elo_data[-1][1], elo_data[-1][0]))
+
+        data.sort(key=lambda x: x[1], reverse=True)
+
+        for team, elo, date in data:
+            print(f"{team}: {elo:.2f}")
+
+    # Current Elo Ratings
+    print("\nCurrent Elo Ratings:")
+
+    data = []
+
+    for team in countries:
+        elo_data = db[team]
+        data.append((team, elo_data[-1][1]))
+
+    data.sort(key=lambda x: x[1], reverse=True)
+
+    for team, elo in data:
+        print(f"{team}: {elo:.2f}")
 
 if __name__ == "__main__":
     main()
