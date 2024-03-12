@@ -104,11 +104,19 @@ def main():
 
     #print(cities)
     print(countries)
+    
+    late = ['Afghanistan', 'Ireland']
 
 
     team_elo_ratings = {team: 1600 for team in set(record[1] for record in all_match_records)}
+    for team in team_elo_ratings:
+        if team in late:
+            team_elo_ratings[team] = 1400
     elo_history = {team: [] for team in team_elo_ratings}
     peak_elo_ratings = {team: 1600 for team in team_elo_ratings}
+    for team in peak_elo_ratings:
+        if team in late:
+            peak_elo_ratings[team] = 1400
     k_factor_regular = 32
 
     db = {}
@@ -119,8 +127,6 @@ def main():
     for record in all_match_records:
         match_index, team1, team2, date, winner, away, name = record
 
-        team_elo_ratings.setdefault(team1, 1600)
-        team_elo_ratings.setdefault(team2, 1600)
 
         if winner:
             winner_elo = team_elo_ratings[team1] if winner == team1 else team_elo_ratings[team2]
@@ -138,7 +144,7 @@ def main():
 
             if name == 'ICC World Test Championship':
                 k_factor_winner = k_factor_winner * 2
-                k_factor_loser = k_factor_loser * 1
+                k_factor_loser = k_factor_loser * 1.5
                            
 
             team_elo_ratings[winner], team_elo_ratings[loser] = update_ratings(

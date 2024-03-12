@@ -124,13 +124,13 @@ def main():
     #print(countries)
 
 
-    test_playing_nations = ['Sri Lanka', 'Pakistan', 'England', 'Australia', 'India', 'West Indies', 'South Africa', 'Zimbabwe', 'New Zealand', 'Bangladesh', 'Ireland']
+    test_playing_nations = ['Sri Lanka', 'Pakistan', 'England', 'Australia', 'India', 'West Indies', 'South Africa', 'Zimbabwe', 'New Zealand', 'Bangladesh']
 
     #default elo 1000 if not test playing nation, 1600 if test playing nation
 
-    team_elo_ratings = {team: 1600 if team in test_playing_nations else 1000 for team in countries}
+    team_elo_ratings = {team: 1600 if team in test_playing_nations else 1100 for team in countries}
     elo_history = {team: [] for team in team_elo_ratings}
-    peak_elo_ratings = {team: 1600 if team in test_playing_nations else 1000 for team in team_elo_ratings}
+    peak_elo_ratings = {team: 1600 if team in test_playing_nations else 1100 for team in team_elo_ratings}
     k_factor_regular = 32
 
     db = {}
