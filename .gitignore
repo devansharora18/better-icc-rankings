@@ -7,6 +7,7 @@ ipl/ipl_json/
 tests/tests_male_json/
 odi/odis_male_json/
 t20i/t20s_male_json/
+script.txt
 
 # C extensions
 *.so
