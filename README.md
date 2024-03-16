@@ -1,2 +1,2 @@
 # elo_system_cricket
- elo system implemented in cricket
+Someone please write the documentation, me too tired
