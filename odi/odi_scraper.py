@@ -156,11 +156,11 @@ def main():
                 k_factor_winner = k_factor_winner * 1.25
                 k_factor_loser = k_factor_loser * 1.25
 
-            if 'ICC World Cup' in name:
+            if name in ['ICC Cricket World Cup', 'World Cup', 'ICC World Cup']:
                 k_factor_winner = k_factor_winner* 2
                 k_factor_loser = k_factor_loser * 2
             
-            if 'ICC Champions Trophy' in name:
+            if name == 'ICC Champions Trophy':
                 k_factor_winner = k_factor_winner * 1.5
                 k_factor_loser = k_factor_loser * 1.5
 
