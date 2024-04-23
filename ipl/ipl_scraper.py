@@ -30,6 +30,14 @@ def extract_match_info(json_data):
     winner = json_data['info']['outcome'].get('winner', None)
     if winner == 'Delhi Daredevils':
         winner = 'Delhi Capitals'
+        
+    if team1 == 'Royal Challengers Bangalore':
+        team1 = 'Royal Challengers Bengaluru'
+    if team2 == 'Royal Challengers Bangalore':
+        team2 = 'Royal Challengers Bengaluru'
+
+    if winner == 'Royal Challengers Bangalore':
+        winner = 'Royal Challengers Bengaluru'
 
     # Replace Kings XI Punjab with Punjab Kings
     if team1 == 'Kings XI Punjab':
@@ -106,7 +114,7 @@ def main():
         "Mumbai Indians": [],
         "Punjab Kings": [],
         "Rajasthan Royals": [],
-        "Royal Challengers Bangalore": [],
+        "Royal Challengers Bengaluru": [],
         "Sunrisers Hyderabad": [],
         "Deccan Chargers": [],
         "Gujarat Lions": [],
@@ -171,7 +179,7 @@ def main():
         print(f"{team}: {peak_elo:.2f} in {peak_elo_date}")
 
         
-    elo_data = db['Royal Challengers Bangalore']
+    elo_data = db['Royal Challengers Bengaluru']
 
     matches_by_year = {}
 
@@ -198,7 +206,7 @@ def main():
             
     print("\nElo at the end of each year:")
     
-    for year in range(2008, 2024):
+    for year in range(2008, 2025):
         print(f"\nYear {year}:")
         teams = []
 
