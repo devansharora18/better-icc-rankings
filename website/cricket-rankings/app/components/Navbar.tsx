@@ -43,7 +43,7 @@ export default function Navbar() {
             ))}
           </div>
           <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-            <a href="https://github.com/devansharora18/elo_system_cricket" target="_blank" rel="noopener noreferrer" className="text-sm font-bold leading-6 text-gray-900">
+            <a href="https://github.com/devansharora18/better-icc-rankings" target="_blank" rel="noopener noreferrer" className="text-sm font-bold leading-6 text-gray-900">
             	Github
             </a>
           </div>
