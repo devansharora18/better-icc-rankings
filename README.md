@@ -21,7 +21,7 @@ You can either:
 
 ## Contribution Guidelines
 
-Contributions to this project are welcomed! If you have suggestions, feature requests, or bug fixes, please open an issue or submit a pull request.
+Contributions to this project are welcomed! (the code is very confusing though because i never cleaned it, at that time only me and github copilot knew what was going on and now only github copilot knows) If you have suggestions, feature requests, or bug fixes, please open an issue or submit a pull request.
 
 ## License
 
