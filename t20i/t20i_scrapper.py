@@ -5,353 +5,241 @@ from datetime import datetime
 cities = set()
 countries = set()
 
-country_city_mapping = {'Afghanistan': [],
- 'Argentina': ['Buenos Aires'],
- 'Australia': ['Adelaide', 'Brisbane', 'Canberra', 'Geelong', 'Hobart', 'Melbourne', 'Perth', 'Sydney', 'Townsville'],
- 'Austria': [],
- 'Bangladesh': ['Chattogram', 'Chittagong', 'Dhaka', 'Fatullah', 'Khulna', 'Sylhet'],
- 'West Indies': ['Bridgetown'],
- 'Belgium': ['Ghent'],
- 'Bermuda': [],
- 'Bhutan': [],
- 'Botswana': ['Windhoek'],
- 'Bulgaria': ['Sofia'],
- 'Cameroon': ['Bangi', 'Yaounde'],
- 'Canada': [],
- 'Chile': [],
- 'China': [],
- 'Cook Islands': [],
- 'Croatia': [],
- 'Cyprus': ['Limassol'],
- 'Czech Republic': ['Prague'],
- 'Denmark': ['Copenhagen'],
- 'England': ['Chester-le-Street', 'Headingley', 'London', 'Lord\'s', 'Manchester', 'Nottingham', 'Rose Bowl', 'Southampton', 'Taunton'],
- 'Estonia': [],
- 'Fiji': [],
- 'Finland': ['Vantaa'],
- 'France': [],
- 'Gambia': [],
- 'Germany': [],
- 'Ghana': ['Accra'],
- 'Greece': [],
- 'Guernsey': [],
- 'Hong Kong': ['Hong Kong'],
- 'Hungary': [],
- 'India': ['Ahmedabad', 'Bangalore', 'Chandigarh', 'Cuttack', 'Delhi', 'Dharamsala', 'Greater Noida', 'Guwahati', 'Hyderabad', 'Indore', 'Jaipur', 'Kanpur', 'Kolkata', 'Lucknow', 'Mumbai', 'Nagpur', 'Pune', 'Rajkot', 'Ranchi', 'Raipur', 'Thiruvananthapuram', 'Visakhapatnam'],
- 'Indonesia': ['Bali'],
- 'Iran': [],
- 'Ireland': ['Dublin', 'Malahide'],
- 'Isle of Man': [],
- 'Israel': [],
- 'Italy': [],
- 'Jamaica': [],
- 'Japan': [],
- 'Jersey': [],
- 'Kenya': [],
- 'Kuwait': [],
- 'Luxembourg': ['Walferdange'],
- 'Malawi': [],
- 'Malaysia': ['Kuala Lumpur'],
- 'Maldives': [],
- 'Malta': [],
- 'Mali': [],
- 'Mexico': [],
- 'Mongolia': [],
- 'Montenegro': [],
- 'Mozambique': [],
- 'Myanmar': [],
- 'Namibia': [],
- 'Nepal': ['Kirtipur'],
- 'Netherlands': ['The Hague'],
- 'New Zealand': ['Auckland', 'Dunedin', 'Hamilton', 'Napier', 'Nelson', 'Queenstown', 'Wellington'],
- 'Nigeria': ['Lagos'],
- 'North Korea': [],  # Not a T20 playing nation
- 'Norway': [],
- 'Oman': [],
- 'Pakistan': ['Karachi', 'Lahore', 'Multan', 'Rawalpindi'],
- 'Panama': [],
- 'Papua New Guinea': ['Port Moresby'],
- 'Portugal': [],
- 'Qatar': ['Doha'],
- 'Romania': [],
- 'Rwanda': ['Kigali City'],
- 'Samoa': [],
- 'Saudi Arabia': [],
- 'Scotland': ['Aberdeen', 'Edinburgh'],
- 'Serbia': ['Belgrade'],
- 'Seychelles': [],
- 'Sierra Leone': [],
- 'Singapore': ['Singapore'],
- 'Slovenia': [],
- 'South Africa': ['Bloemfontein', 'Centurion', 'Durban', 'East London', 'Paarl', 'Parow', 'Port Elizabeth', 'Pretoria'],
- 'South Korea': [],
- 'Spain': ['Almeria', 'Barcelona'],
- 'Sri Lanka': ['Colombo'],
- 'Swaziland': [],  # Swaziland is now called Eswatini
- 'Sweden': [],
- 'Switzerland': [],
- 'Tanzania': [],
- 'Thailand': ['Bangkok'],
- 'Trinidad and Tobago': ['Port of Spain'],
- 'Turkey': [],
- 'Uganda': ['Kampala'],
- 'United Arab Emirates': ['Dubai', 'Sharjah'],
- 'United States of America': [],
- 'Uruguay': [],  # Uruguay is a T20 playing nation, but not in your list
- 'Vanuatu': [],
- 'Zimbabwe': [],
- 'Philippines': [],
- 'Cayman Islands': [],
- 'Gibraltar': [],
- 'Bahrain': [],
- 'Lesotho': [],
- 'Belize': [],
- 'Bahamas': [],
- 'St Helena': [],
- 'Eswatini': [],
- 'Cambodia': [],
- }
-
 
 def calculate_probability(rating1, rating2):
-    return 1 / (1 + 10**((rating2 - rating1) / 400))
+	return 1 / (1 + 10**((rating2 - rating1) / 400))
 
 def update_ratings(rating1, rating2, k_factor, k_factor_loser, result):
-    p = calculate_probability(rating1, rating2)
-    rating1_new = rating1 + k_factor * (result - p)
-    rating2_new = rating2 + k_factor_loser * ((1 - result) - (1 - p))
-    return rating1_new, rating2_new
+	p = calculate_probability(rating1, rating2)
+	rating1_new = rating1 + k_factor * (result - p)
+	rating2_new = rating2 + k_factor_loser * ((1 - result) - (1 - p))
+	return rating1_new, rating2_new
 
 def extract_year_from_date(date):
-    return datetime.strptime(date, "%Y-%m-%d").year
+	return datetime.strptime(date, "%Y-%m-%d").year
 
 def extract_match_info(json_data):
-    #stage = event_info.get('stage', 'Unknown')
-    team1 = json_data['info']['teams'][0]
-    team2 = json_data['info']['teams'][1]
-    if 'XI' in team1 or 'XI' in team2:
-        return None
-    winner = json_data['info']['outcome'].get('winner', None)
-    city = json_data['info'].get('city', 'Unknown')
-    cities.add(city)
-    countries.add(team1)
-    countries.add(team2)
-
-    away = False
-    if team1 == winner:
-        loser = team2
-    else:
-        loser = team1
-
-    if winner != None and city not in country_city_mapping[winner] and city in country_city_mapping[loser]:
-        away = True
-
-    event = json_data['info'].get('event', {})
-    name = event.get('name', 'Unknown')
-    
-    stage = event.get('stage', 'Unknown')
+	#stage = event_info.get('stage', 'Unknown')
+	team1 = json_data['info']['teams'][0]
+	team2 = json_data['info']['teams'][1]
+	if 'XI' in team1 or 'XI' in team2:
+		return None
+	winner = json_data['info']['outcome'].get('winner', None)
+	city = json_data['info'].get('city', 'Unknown')
+	
+	cities.add(city)
+	countries.add(team1)
+	countries.add(team2)
 
 
-    match_info = (
-        team1,
-        team2,
-        json_data['info']['dates'][0],
-        winner,
-        away,
-        name,
-        stage
-    )
-    return match_info
+	event = json_data['info'].get('event', {})
+	name = event.get('name', 'Unknown')
+	
+	stage = event.get('stage', 'Unknown')
+
+
+	match_info = (
+		team1,
+		team2,
+		json_data['info']['dates'][0],
+		winner,
+		name,
+		stage
+	)
+	return match_info
 
 def scrape_match_records(folder_path):
-    match_records = []
+	match_records = []
 
-    for filename in os.listdir(folder_path):
-        if filename.endswith(".json"):
-            file_path = os.path.join(folder_path, filename)
+	for filename in os.listdir(folder_path):
+		if filename.endswith(".json"):
+			file_path = os.path.join(folder_path, filename)
 
-            with open(file_path, 'r') as file:
-                match_data = json.load(file)
-                match_info = extract_match_info(match_data)
-                if match_info == None:
-                    continue
-                match_records.append(match_info)
+			with open(file_path, 'r') as file:
+				match_data = json.load(file)
+				match_info = extract_match_info(match_data)
+				if match_info == None:
+					continue
+				match_records.append(match_info)
 
-    sorted_records = sorted(match_records, key=lambda x: extract_year_from_date(x[2]))
-    numbered_records = [(index + 1,) + record[0:] for index, record in enumerate(sorted_records)]
+	sorted_records = sorted(match_records, key=lambda x: extract_year_from_date(x[2]))
+	numbered_records = [(index + 1,) + record[0:] for index, record in enumerate(sorted_records)]
 
-    return numbered_records
+	return numbered_records
 
 def scrape_to_file():
-    folder_path = "t20s_male_json/"
-    all_match_records = scrape_match_records(folder_path)
-    with open('matches.txt', 'w') as file:
-        for record in all_match_records:
-            file.write(f"{record}\n")
+	folder_path = "t20s_male_json/"
+	all_match_records = scrape_match_records(folder_path)
+	with open('matches.txt', 'w') as file:
+		for record in all_match_records:
+			file.write(f"{record}\n")
 
 def main():
-    scrape_to_file()
-    
-    all_match_records = []
-    
-    with open('matches.txt', 'r') as file:
-        for line in file:
-            match_record = eval(line)
-            all_match_records.append(match_record)
+	scrape_to_file()
+	
+	all_match_records = []
+	
+	with open('matches.txt', 'r') as file:
+		for line in file:
+			match_record = eval(line)
+			all_match_records.append(match_record)
 
-    #print(cities)
-    #print(countries)
-    
-    test_playing_nations = ['Sri Lanka', 'Pakistan', 'England', 'Australia', 'India', 'West Indies', 'South Africa', 'Zimbabwe', 'New Zealand', 'Bangladesh']
+	#print(cities)
+	#print(countries)
+	
+	test_playing_nations = ['Sri Lanka', 'Pakistan', 'England', 'Australia', 'India', 'West Indies', 'South Africa', 'Zimbabwe', 'New Zealand', 'Bangladesh']
 
-    #default elo 1000 if not test playing nation, 1600 if test playing nation
+	#default elo 1000 if not test playing nation, 1600 if test playing nation
 
-    team_elo_ratings = {team: 1600 if team in test_playing_nations else 1100 for team in countries}
-    elo_history = {team: [] for team in team_elo_ratings}
-    peak_elo_ratings = {team: 1600 if team in test_playing_nations else 1100 for team in team_elo_ratings}
-    k_factor_regular = 32
+	team_elo_ratings = {team: 1600 if team in test_playing_nations else 1100 for team in countries}
+	elo_history = {team: [] for team in team_elo_ratings}
+	peak_elo_ratings = {team: 1600 if team in test_playing_nations else 1100 for team in team_elo_ratings}
+	k_factor_regular = 32
 
-    db = {}
+	db = {}
 
-    for country in countries:
-        db[country] = []
+	for country in countries:
+		db[country] = []
 
-    for record in all_match_records:
-        match_index, team1, team2, date, winner, away, name, stage = record
-
-
-        if winner:
-            winner_elo = team_elo_ratings[team1] if winner == team1 else team_elo_ratings[team2]
-            loser = team2 if winner == team1 else team1
-            loser_elo = team_elo_ratings[loser]
-
-            #print(stage)
-
-            k_factor_winner = k_factor_regular
-            k_factor_loser = k_factor_regular
-
-            if away:
-                k_factor_winner = k_factor_winner * 1.25
-                k_factor_loser = k_factor_loser * 1.25
+	for record in all_match_records:
+		match_index, team1, team2, date, winner, name, stage = record
 
 
-            if name in ['ICC Men\'s T20 World Cup', 'World T20', 'ICC World Twenty20']:
-                k_factor_winner = k_factor_winner * 2
-                k_factor_loser = k_factor_loser * 2
-            
-            if stage == 'Final':
-                k_factor_winner = k_factor_winner * 2
-                k_factor_loser = k_factor_loser * 1.5
+		if winner:
+			winner_elo = team_elo_ratings[team1] if winner == team1 else team_elo_ratings[team2]
+			loser = team2 if winner == team1 else team1
+			loser_elo = team_elo_ratings[loser]
 
-            if stage == 'Semi Final':
-                k_factor_winner = k_factor_winner * 1.5
-                k_factor_loser = k_factor_loser * 1.25
-            
-            if stage == 'Quarter Final':
-                k_factor_winner = k_factor_winner * 1.5
-                k_factor_loser = k_factor_loser * 1.25
+			#print(stage)
 
-            team_elo_ratings[winner], team_elo_ratings[loser] = update_ratings(
-                winner_elo, loser_elo, k_factor_winner, k_factor_loser, 1
-            )
-
-            year = extract_year_from_date(date)
-            elo_history[team1].append((year, team_elo_ratings[team1]))
-            elo_history[team2].append((year, team_elo_ratings[team2]))
-
-            team1db = [date, team_elo_ratings[team1]]
-            team2db = [date, team_elo_ratings[team2]]
-
-            db[team1].append(team1db)
-            db[team2].append(team2db)
-
-    # Sort db[team] by date
-    
-    for team in db:
-        db[team] = sorted(db[team], key=lambda x: x[0])
-
-    #print("\nPeak Elo Ratings for Each Team:")
-    peak = []
-    for team in elo_history:
-        peak_elo, peak_elo_date = max((elo, date) for date, elo in elo_history[team])
-        res = team, peak_elo, peak_elo_date
-        peak.append(res)
-    # Sort the teams by their peak Elo rating
-        
-    print("\nPeak Elo Ratings for Each Team:")
-    peak.sort(key=lambda x: x[1], reverse=True)
-    for team, peak_elo, peak_elo_date in peak:
-        print(f"{team}: {peak_elo:.2f} in {peak_elo_date}")
-
-    elo_data = db['Australia']
-
-    matches_by_year = {}
-
-    # Iterate through elo_data and organize matches by year
-    for date, elo in elo_data:
-        year = date.split('-')[0]
-        if year not in matches_by_year:
-            matches_by_year[year] = []
-    
-        matches_by_year[year].append({'date': date, 'elo': elo})
-    
-    # Sort matches within each year by date
-    for year, matches in matches_by_year.items():
-        matches_by_year[year] = sorted(matches, key=lambda x: x['date'])
-    
-    # Print the organized data
-    #for year, matches in matches_by_year.items():
-    #    print(f"\nYear {year}:")
-    #    for index, match in enumerate(matches, start=1):
-    #        print(f"Match {index}: Date {match['date']}, Elo {match['elo']:.2f}")
+			k_factor_winner = k_factor_regular
+			k_factor_loser = k_factor_regular
 
 
-    # Elo at the end of each year
-            
-    print("\nElo at the end of each year:")
-    
-    for year in range(2002, 2025):
-        print(f"\nYear {year}:")
-        teams = countries
+			if name in ['ICC Men\'s T20 World Cup', 'World T20', 'ICC World Twenty20']:
+				k_factor_winner = k_factor_winner * 2
+				k_factor_loser = k_factor_loser * 2
+			
+			if stage == 'Final':
+				k_factor_winner = k_factor_winner * 2
+				k_factor_loser = k_factor_loser * 1.5
 
-        data = []
+			if stage == 'Semi Final':
+				k_factor_winner = k_factor_winner * 1.5
+				k_factor_loser = k_factor_loser * 1.25
+			
+			if stage == 'Quarter Final':
+				k_factor_winner = k_factor_winner * 1.5
+				k_factor_loser = k_factor_loser * 1.25
 
-        for team in teams:
-            elo_data = db[team]
+			team_elo_ratings[winner], team_elo_ratings[loser] = update_ratings(
+				winner_elo, loser_elo, k_factor_winner, k_factor_loser, 1
+			)
 
-            n = 0
+			year = extract_year_from_date(date)
+			elo_history[team1].append((year, team_elo_ratings[team1]))
+			elo_history[team2].append((year, team_elo_ratings[team2]))
 
-            for i in range(len(elo_data)):
-                if elo_data[i][0].split('-')[0] == str(year):
-                    n += 1
-                    try:
-                        if elo_data[i+1][0].split('-')[0] != str(year):
-                            data.append((team, elo_data[i][1], elo_data[i][0]))
-                    except:
-                        data.append((team, elo_data[i][1], elo_data[i][0]))
+			team1db = [date, team_elo_ratings[team1]]
+			team2db = [date, team_elo_ratings[team2]]
 
-            #if n == 0:
-            #    data.append((team, elo_data[-1][1], elo_data[-1][0]))
+			db[team1].append(team1db)
+			db[team2].append(team2db)
 
-        data.sort(key=lambda x: x[1], reverse=True)
+	# Sort db[team] by date
+	
+	for team in db:
+		db[team] = sorted(db[team], key=lambda x: x[0])
 
-        for team, elo, date in data:
-            print(f"{team}: {elo:.2f}")
+	#print("\nPeak Elo Ratings for Each Team:")
+	peak = []
+	for team in elo_history:
+		peak_elo, peak_elo_date = max((elo, date) for date, elo in elo_history[team])
+		res = team, peak_elo, peak_elo_date
+		peak.append(res)
+	# Sort the teams by their peak Elo rating
+		
+	print("\nPeak Elo Ratings for Each Team:")
+	peak.sort(key=lambda x: x[1], reverse=True)
+	for team, peak_elo, peak_elo_date in peak:
+		print(f"{team}: {peak_elo:.2f} in {peak_elo_date}")
 
-    # Current Elo Ratings
-    print("\nCurrent Elo Ratings:")
+	elo_data = db['Australia']
 
-    data = []
+	matches_by_year = {}
 
-    for team in countries:
-        elo_data = db[team]
-        data.append((team, elo_data[-1][1]))
+	# Iterate through elo_data and organize matches by year
+	for date, elo in elo_data:
+		year = date.split('-')[0]
+		if year not in matches_by_year:
+			matches_by_year[year] = []
+	
+		matches_by_year[year].append({'date': date, 'elo': elo})
+	
+	# Sort matches within each year by date
+	for year, matches in matches_by_year.items():
+		matches_by_year[year] = sorted(matches, key=lambda x: x['date'])
+	
+	# Print the organized data
+	#for year, matches in matches_by_year.items():
+	#    print(f"\nYear {year}:")
+	#    for index, match in enumerate(matches, start=1):
+	#        print(f"Match {index}: Date {match['date']}, Elo {match['elo']:.2f}")
 
-    data.sort(key=lambda x: x[1], reverse=True)
 
-    for team, elo in data:
-        print(f"{team}: {elo:.2f}")
+	# Elo at the end of each year
+			
+	print("\nElo at the end of each year:")
+	
+	for year in range(2002, 2025):
+		print(f"\nYear {year}:")
+		teams = countries
 
-    
+		data = []
+
+		for team in teams:
+			elo_data = db[team]
+
+			n = 0
+
+			for i in range(len(elo_data)):
+				if elo_data[i][0].split('-')[0] == str(year):
+					n += 1
+					try:
+						if elo_data[i+1][0].split('-')[0] != str(year):
+							data.append((team, elo_data[i][1], elo_data[i][0]))
+					except:
+						data.append((team, elo_data[i][1], elo_data[i][0]))
+
+			#if n == 0:
+			#    data.append((team, elo_data[-1][1], elo_data[-1][0]))
+
+		data.sort(key=lambda x: x[1], reverse=True)
+
+		for team, elo, date in data:
+			print(f"{team}: {elo:.2f}")
+
+	# Current Elo Ratings
+	print("\nCurrent Elo Ratings:")
+
+	data = []
+
+	for team in countries:
+		elo_data = db[team]
+		data.append((team, elo_data[-1][1]))
+
+	data.sort(key=lambda x: x[1], reverse=True)
+
+	for team, elo in data:
+		print(f"{team}: {elo:.2f}")
+		
+	# Write the data to a ts list in a file
+	
+	with open('../website/cricket-rankings/app/t20i/t20i_ratings.ts', 'w') as file:
+		file.write("export const t20iRatings = [\n")
+		for team, elo in data:
+			file.write(f"\t{{team: '{team}', elo: {elo:.2f}}},\n")
+		file.write("];\n")
+	
 if __name__ == "__main__":
-    main()
+	main()

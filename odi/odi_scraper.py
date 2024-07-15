@@ -55,9 +55,13 @@ def extract_match_info(json_data):
 		return None
 	winner = json_data['info']['outcome'].get('winner', None)
 	city = json_data['info'].get('city', 'Unknown')
-	cities.add(city)
-	countries.add(team1)
-	countries.add(team2)
+	
+	if city not in cities:
+		cities.append(city)
+	if team1 not in countries:
+		countries.append(team1)
+	if team2 not in countries:
+		countries.append(team2)
 
 	away = False
 	if team1 == winner:
@@ -112,7 +116,7 @@ def scrape_to_file():
 			file.write(f"{record}\n")
 
 def main():
-	#scrape_to_file()
+	scrape_to_file()
 	
 	all_match_records = []
 	
@@ -282,5 +286,11 @@ def main():
 	#print(countries)
 	#print(cities)
 	
+	with open('../website/cricket-rankings/app/odi/odi_ratings.ts', 'w') as file:
+		file.write("export const odiRatings = [\n")
+		for team, elo in data:
+			file.write(f"\t{{team: '{team}', elo: {elo:.2f}}},\n")
+		file.write("];\n")
+
 if __name__ == "__main__":
 	main()

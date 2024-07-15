@@ -5,13 +5,14 @@ import React from 'react'
 import { Dialog } from '@headlessui/react'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import { useState } from 'react'
+import Link from 'next/link'
 
 
 const navigation = [
-	{ name: 'Test', href: '#' },
-	{ name: 'ODI', href: '#' },
-	{ name: 'T20i', href: '#' },
-	{ name: 'IPL', href: '#' },
+	{ name: 'Test', href: '/tests' },
+	{ name: 'ODI', href: '/odi' },
+	{ name: 'T20i', href: '/t20i' },
+	{ name: 'IPL', href: '/ipl' },
   ]
 
 export default function Navbar() {
@@ -20,9 +21,9 @@ export default function Navbar() {
 	<header className="absolute inset-x-0 top-0 z-50">
         <nav className="flex items-center justify-between p-6 lg:px-8" aria-label="Global">
           <div className="flex lg:flex-1">
-            <a href="#" className="-m-1.5 p-1.5">
+            <Link href="/" className="-m-1.5 p-1.5">
               <span className=' text-xl font-bold leading-6'>Better ICC Rankings</span>
-            </a>
+            </Link>
           </div>
           <div className="flex lg:hidden">
             <button
@@ -36,13 +37,13 @@ export default function Navbar() {
           </div>
           <div className="hidden lg:flex lg:gap-x-12">
             {navigation.map((item) => (
-              <a key={item.name} href={item.href} className="text-sm font-semibold leading-6 text-gray-900">
+              <Link key={item.name} href={item.href} className="text-sm font-semibold leading-6 text-gray-900">
                 {item.name}
-              </a>
+              </Link>
             ))}
           </div>
           <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-            <a href="#" className="text-sm font-semibold leading-6 text-gray-900">
+            <a href="https://github.com/devansharora18/elo_system_cricket" target="_blank" rel="noopener noreferrer" className="text-sm font-bold leading-6 text-gray-900">
             	Github
             </a>
           </div>
