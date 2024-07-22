@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   title: "Better ICC Rankings",
   description: "Just Better",
   icons: {
-	icon: ['/favicon.ico'],
+	icon: ['/icon.ico'],
   }
 };
 
