@@ -33,7 +33,7 @@ def extract_match_info(json_data):
     team1 = changed_team_names(team1, old_names, new_names)
     team2 = changed_team_names(team2, old_names, new_names)
 
-	winner = json_data['info']['outcome'].get('winner', None)
+    winner = json_data['info']['outcome'].get('winner', None)
     winner = changed_team_names(winner, old_names, new_names)
 
     # Have to handle 'Kings XI Punjab' manually
