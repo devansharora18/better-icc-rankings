@@ -14,13 +14,41 @@ def update_ratings(rating1, rating2, k_factor, k_factor_loser, result):
 def extract_year_from_date(date):
 	return datetime.strptime(date, "%Y-%m-%d").year
 
+def changed_team_names(team, old_names, new_names):
+    for old, new in zip(old_names, new_names):
+        team = team.replace(old, new)
+    return team
+
+
 def extract_match_info(json_data):
 	event_info = json_data['info']['event']
 	stage = event_info.get('stage', 'Unknown')
 	team1 = json_data['info']['teams'][0]
 	team2 = json_data['info']['teams'][1]
 
+
+    old_names = ['Daredevils', 'Bangalore', 'Supergiants']
+    new_names = ['Capitals', 'Bengaluru', 'Supergiant']
+
+    team1 = changed_team_names(team1, old_names, new_names)
+    team2 = changed_team_names(team2, old_names, new_names)
+
+	winner = json_data['info']['outcome'].get('winner', None)
+    winner = changed_team_names(winner, old_names, new_names)
+
+    # Have to handle 'Kings XI Punjab' manually
+    # Replace Kings XI Punjab with Punjab Kings [cannot use the change_team_names function here]
+    if team1 == 'Kings XI Punjab':
+        team1 = 'Punjab Kings'
+    if team2 == 'Kings XI Punjab':
+        team2 = 'Punjab Kings'
+    if winner == 'Kings XI Punjab':
+        winner = 'Punjab Kings'
+
+
+'''
 	# Replace 'Delhi Daredevils' with 'Delhi Capitals'
+    team1 = team1.replace("Daredevils", "Capitals")
 	if team1 == 'Delhi Daredevils':
 		team1 = 'Delhi Capitals'
 
@@ -55,6 +83,7 @@ def extract_match_info(json_data):
 		team2 = 'Rising Pune Supergiant'
 	if winner == 'Rising Pune Supergiants':
 		winner = 'Rising Pune Supergiant'
+'''
 
 	match_info = (
 		team1,
