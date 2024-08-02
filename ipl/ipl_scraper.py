@@ -71,19 +71,21 @@ def scrape_match_records(folder_path):
 
     return numbered_records
 
-def scrape_to_file():
+def scrape_to_file(matches):
     folder_path = "ipl_json/"
     all_match_records = scrape_match_records(folder_path)
-    with open('matches.txt', 'w') as file:
+    with open(matches, 'w') as file:
         for record in all_match_records:
             file.write(f"{record}\n")
 
 def main():
-    scrape_to_file()
+    matches = "matches.txt"
+
+    scrape_to_file(matches)
     
     all_match_records = []
     
-    with open('matches.txt', 'r') as file:
+    with open(matches, 'r') as file:
         for line in file:
             match_record = eval(line)
             all_match_records.append(match_record)
