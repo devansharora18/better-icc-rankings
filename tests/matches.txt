@@ -802,3 +802,7 @@
 (802, 'New Zealand', 'Australia', '2024-03-08', 'Australia', True, 'Australia tour of New Zealand')
 (803, 'Sri Lanka', 'Bangladesh', '2024-03-22', 'Sri Lanka', True, 'Sri Lanka tour of Bangladesh')
 (804, 'Sri Lanka', 'Bangladesh', '2024-03-30', 'Sri Lanka', True, 'Sri Lanka tour of Bangladesh')
+(805, 'West Indies', 'England', '2024-07-10', 'England', False, 'West Indies tour of England')
+(806, 'England', 'West Indies', '2024-07-18', 'England', False, 'West Indies tour of England')
+(807, 'West Indies', 'England', '2024-07-26', 'England', False, 'West Indies tour of England')
+(808, 'Zimbabwe', 'Ireland', '2024-07-25', 'Ireland', False, 'Zimbabwe tour of Ireland')
