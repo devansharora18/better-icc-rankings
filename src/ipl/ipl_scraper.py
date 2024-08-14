@@ -3,7 +3,6 @@ import sys
 sys.path.append('..')
 import elo_methods
 
-
 def main():
     elo_m = elo_methods.elo_methods()
     elo_m.scrape_to_file('ipl_json/')
