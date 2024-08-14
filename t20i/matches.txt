@@ -2401,3 +2401,8 @@
 (2401, 'India', 'Sri Lanka', '2024-07-27', 'India', 'India tour of Sri Lanka', 'Unknown')
 (2402, 'Sri Lanka', 'India', '2024-07-28', 'India', 'India tour of Sri Lanka', 'Unknown')
 (2403, 'India', 'Sri Lanka', '2024-07-30', None, 'India tour of Sri Lanka', 'Unknown')
+(2404, 'Croatia', 'Spain', '2024-08-02', 'Spain', 'Spain tour of Croatia', 'Unknown')
+(2405, 'Croatia', 'Spain', '2024-08-03', 'Spain', 'Spain tour of Croatia', 'Unknown')
+(2406, 'Croatia', 'Spain', '2024-08-03', 'Spain', 'Spain tour of Croatia', 'Unknown')
+(2407, 'Spain', 'Croatia', '2024-08-04', 'Spain', 'Spain tour of Croatia', 'Unknown')
+(2408, 'Spain', 'Croatia', '2024-08-04', 'Spain', 'Spain tour of Croatia', 'Unknown')

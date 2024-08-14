@@ -1,11 +1,11 @@
 export const odiRatings = [
 	{team: 'Australia', elo: 1963.20},
-	{team: 'India', elo: 1875.38},
+	{team: 'India', elo: 1819.82},
 	{team: 'South Africa', elo: 1749.99},
 	{team: 'Pakistan', elo: 1682.39},
 	{team: 'New Zealand', elo: 1630.70},
 	{team: 'England', elo: 1596.06},
-	{team: 'Sri Lanka', elo: 1517.80},
+	{team: 'Sri Lanka', elo: 1573.36},
 	{team: 'Bangladesh', elo: 1510.40},
 	{team: 'Afghanistan', elo: 1476.76},
 	{team: 'West Indies', elo: 1460.56},

@@ -2465,3 +2465,6 @@
 (2465, 'Namibia', 'Oman', '2024-07-24', 'Oman', False, "ICC Men's Cricket World Cup League 2", 'Unknown')
 (2466, 'Scotland', 'Namibia', '2024-07-26', 'Scotland', False, "ICC Men's Cricket World Cup League 2", 'Unknown')
 (2467, 'Oman', 'Namibia', '2024-07-18', 'Namibia', False, "ICC Men's Cricket World Cup League 2", 'Unknown')
+(2468, 'Sri Lanka', 'India', '2024-08-02', None, False, 'India tour of Sri Lanka', 'Unknown')
+(2469, 'Sri Lanka', 'India', '2024-08-04', 'Sri Lanka', False, 'India tour of Sri Lanka', 'Unknown')
+(2470, 'Sri Lanka', 'India', '2024-08-07', 'Sri Lanka', False, 'India tour of Sri Lanka', 'Unknown')
