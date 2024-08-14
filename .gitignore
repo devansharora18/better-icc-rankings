@@ -3,10 +3,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-ipl/ipl_json/
-tests/tests_male_json/
-odi/odis_male_json/
-t20i/t20s_male_json/
+src/ipl/ipl_json/
+src/tests/tests_male_json/
+src/odi/odis_male_json/
+src/t20i/t20s_male_json/
 script.txt
 
 # C extensions
