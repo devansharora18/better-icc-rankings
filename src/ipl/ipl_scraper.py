@@ -1,15 +1,16 @@
 import sys
+import os
 
-sys.path.append('..')
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 import elo_methods
 
 def main():
     elo_m = elo_methods.elo_methods()
-    elo_m.scrape_to_file('ipl_json/')
+    elo_m.scrape_to_file('ipl/ipl_male_json/')
     
     all_match_records = []
     
-    with open('matches.txt', 'r') as file:
+    with open('ipl/matches.txt', 'r') as file:
         for line in file:
             match_record = eval(line)
             all_match_records.append(match_record)
@@ -119,7 +120,7 @@ def main():
 
             
         
-    with open('../../website/cricket-rankings/app/ipl/ipl_ratings.ts', 'w') as file:
+    with open('../website/cricket-rankings/app/ipl/ipl_ratings.ts', 'w') as file:
         file.write("export const iplRatings = [\n")
         for team, elo in data:
             if team in ['Kochi Tuskers Kerala', 'Pune Warriors', 'Rising Pune Supergiant', 'Gujarat Lions', 'Deccan Chargers']:

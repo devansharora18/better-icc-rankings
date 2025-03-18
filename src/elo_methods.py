@@ -148,6 +148,10 @@ class elo_methods:
         
         # Scrape match records and write to a file
         all_match_records = self.scrape_match_records(folder_path, format)
-        with open('matches.txt', 'w') as file:
+        if format == 't20':
+            format = 't20i'
+        if format == 'test':
+            format = 'tests'
+        with open(f'{format}/matches.txt', 'w') as file:
             for record in all_match_records:
                 file.write(f"{record}\n")

@@ -1,16 +1,18 @@
 import sys
+import os
 
-sys.path.append('..')
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 import elo_methods
 
 def main():
     elo_m = elo_methods.elo_methods()
 
-    elo_m.scrape_to_file('odis_male_json/')
+    elo_m.scrape_to_file('odi/odis_male_json/')
     
     all_match_records = []
     
-    with open('matches.txt', 'r') as file:
+    with open('odi/matches.txt', 'r') as file:
         for line in file:
             match_record = eval(line)
             all_match_records.append(match_record)
@@ -123,7 +125,7 @@ def main():
     for team, elo in data:
         print(f"{team}: {elo:.2f}")
     
-    with open('../../website/cricket-rankings/app/odi/odi_ratings.ts', 'w') as file:
+    with open('../website/cricket-rankings/app/odi/odi_ratings.ts', 'w') as file:
         file.write("export const odiRatings = [\n")
         for team, elo in data:
             file.write(f"\t{{team: '{team}', elo: {elo:.2f}}},\n")
